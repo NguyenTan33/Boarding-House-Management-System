@@ -71,6 +71,9 @@ namespace Domain.Entities
         public string? PaymentMethod { get; private set; }            // Tiền mặt / Chuyển khoản / VietQR
         public string? Note { get; private set; }                     // Ghi chú hóa đơn
 
+        // Lịch sử các lần giao dịch thanh toán cho hóa đơn này
+        public ICollection<Payment> Payments { get; private set; } = new List<Payment>();
+
         // Constructor cho EF Core
         private Invoice() { }
 

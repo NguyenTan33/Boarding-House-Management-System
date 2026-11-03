@@ -55,6 +55,9 @@ namespace Domain.Entities
         // Danh sách các hóa đơn tiền phòng hàng tháng của hợp đồng này
         public ICollection<Invoice> Invoices { get; private set; } = new List<Invoice>();
 
+        // Danh sách các giao dịch thanh toán liên quan đến hợp đồng này (đặt cọc, tiền phòng...)
+        public ICollection<Payment> Payments { get; private set; } = new List<Payment>();
+
         // Constructor cho EF Core
         private Contract() { }
 
