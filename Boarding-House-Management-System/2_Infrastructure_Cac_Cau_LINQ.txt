@@ -1,0 +1,263 @@
+====================================================================================================
+           TẦNG INFRASTRUCTURE - TỔNG HỢP CÁC CÂU LỆNH LINQ THỰC TẾ (REPOSITORIES)
+====================================================================================================
+Dự án: Boarding-House-Management-System
+Tầng: Infrastructure -> Repositories
+Quy tắc: Toàn bộ LINQ ở tầng này là IQueryable (chạy trực tiếp dưới SQL Server, không kéo bừa về RAM).
+Ngày tạo: 03/11/2026
+
+====================================================================================================
+PHẦN A: GENERIC REPOSITORY (DÙNG CHUNG CHO MỌI THỰC THỂ)
+====================================================================================================
+// Nằm ở: Infrastructure/Repositories/GenericRepository<T>
+// Kế thừa IRepository<T> ở Application
+
+1. Lấy theo Id (Khóa chính):
+   await _context.Set<T>().FindAsync(id);
+
+2. Lấy tất cả (Loại bỏ các bản ghi đã xóa mềm):
+   await _context.Set<T>()
+       .Where(x => !x.IsDeleted)
+       .AsNoTracking()
+       .ToListAsync();
+
+3. Lọc theo điều kiện bất kỳ (Predicate Expression):
+   await _context.Set<T>()
+       .Where(predicate)
+       .Where(x => !x.IsDeleted)
+       .AsNoTracking()
+       .ToListAsync();
+
+4. Thêm mới, Sửa, Xóa mềm:
+   await _context.Set<T>().AddAsync(entity);
+   _context.Set<T>().Update(entity);
+   entity.MarkAsDeleted(); // Gọi hàm xóa mềm của BaseEntity
+   await _context.SaveChangesAsync();
+
+
+====================================================================================================
+PHẦN B: CÁC CÂU LỆNH LINQ CHUYÊN BIỆT THEO TỪNG MODULE
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+1. MODULE ROOMS (RoomRepository.cs)
+----------------------------------------------------------------------------------------------------
+
+1.1. Lấy danh sách phòng có kèm bộ lọc (Filter) và Phân trang (Paging):
+   public async Task<List<Room>> GetFilteredRoomsAsync(int houseId, RoomStatus? status, int page, int pageSize)
+   {
+       var query = _context.Rooms
+           .Where(r => !r.IsDeleted && r.HouseId == houseId);
+
+       if (status.HasValue)
+           query = query.Where(r => r.Status == status.Value);
+
+       return await query
+           .OrderBy(r => r.Floor)
+           .ThenBy(r => r.RoomNumber)
+           .Skip((page - 1) * pageSize)
+           .Take(pageSize)
+           .AsNoTracking()
+           .ToListAsync();
+   }
+
+1.2. Lấy chi tiết 1 phòng kèm thông tin Hợp đồng đang thuê và Khách thuê:
+   public async Task<Room?> GetRoomWithActiveContractAsync(int roomId)
+   {
+       return await _context.Rooms
+           .Include(r => r.Contracts.Where(c => c.Status == ContractStatus.Active && !c.IsDeleted))
+               .ThenInclude(c => c.Tenant)
+           .AsNoTracking()
+           .FirstOrDefaultAsync(r => r.Id == roomId && !r.IsDeleted);
+   }
+
+1.3. Kiểm tra số phòng đã tồn tại trong dãy trọ chưa (Tránh tạo trùng số phòng):
+   public async Task<bool> IsRoomNumberExistsAsync(int houseId, string roomNumber, int? excludeRoomId = null)
+   {
+       return await _context.Rooms
+           .AnyAsync(r => r.HouseId == houseId 
+                       && r.RoomNumber == roomNumber 
+                       && (!excludeRoomId.HasValue || r.Id != excludeRoomId.Value)
+                       && !r.IsDeleted);
+   }
+
+
+----------------------------------------------------------------------------------------------------
+2. MODULE CONTRACTS & TENANTS (ContractRepository.cs & TenantRepository.cs)
+----------------------------------------------------------------------------------------------------
+
+2.1. Lấy hợp đồng đang hoạt động của một phòng cụ thể:
+   public async Task<Contract?> GetActiveContractByRoomIdAsync(int roomId)
+   {
+       return await _context.Contracts
+           .Include(c => c.Tenant)
+           .Include(c => c.Room)
+           .FirstOrDefaultAsync(c => c.RoomId == roomId 
+                                  && c.Status == ContractStatus.Active 
+                                  && !c.IsDeleted);
+   }
+
+2.2. Lấy danh sách các hợp đồng sắp hết hạn trong vòng X ngày tới (Để chủ trọ liên hệ gia hạn):
+   public async Task<List<Contract>> GetExpiringContractsAsync(int daysThreshold)
+   {
+       var targetDate = DateTime.UtcNow.AddDays(daysThreshold);
+
+       return await _context.Contracts
+           .Include(c => c.Room)
+           .Include(c => c.Tenant)
+           .Where(c => c.Status == ContractStatus.Active 
+                    && c.EndDate <= targetDate 
+                    && !c.IsDeleted)
+           .OrderBy(c => c.EndDate)
+           .AsNoTracking()
+           .ToListAsync();
+   }
+
+2.3. Tìm kiếm khách thuê theo Tên, SĐT hoặc Số CCCD:
+   public async Task<List<Tenant>> SearchTenantsAsync(string keyword)
+   {
+       keyword = keyword.Trim().ToLower();
+
+       return await _context.Tenants
+           .Where(t => !t.IsDeleted && 
+                      (t.FullName.ToLower().Contains(keyword) || 
+                       t.PhoneNumber.Contains(keyword) || 
+                       t.CitizenId.Contains(keyword)))
+           .AsNoTracking()
+           .ToListAsync();
+   }
+
+
+----------------------------------------------------------------------------------------------------
+3. MODULE METER READINGS (MeterReadingRepository.cs)
+----------------------------------------------------------------------------------------------------
+
+3.1. Lấy chỉ số điện nước tháng gần nhất trước đó (Để làm mốc số cũ tính tiền):
+   public async Task<MeterReading?> GetPreviousReadingAsync(int roomId, int currentMonth, int currentYear)
+   {
+       return await _context.MeterReadings
+           .Where(m => m.RoomId == roomId && !m.IsDeleted)
+           .Where(m => m.Year < currentYear || (m.Year == currentYear && m.Month < currentMonth))
+           .OrderByDescending(m => m.Year)
+           .ThenByDescending(m => m.Month)
+           .FirstOrDefaultAsync();
+   }
+
+3.2. Lấy toàn bộ chỉ số điện nước của 1 dãy trọ trong 1 tháng cụ thể:
+   public async Task<List<MeterReading>> GetReadingsByHouseAndMonthAsync(int houseId, int month, int year)
+   {
+       return await _context.MeterReadings
+           .Include(m => m.Room)
+           .Where(m => m.Room.HouseId == houseId 
+                    && m.Month == month 
+                    && m.Year == year 
+                    && !m.IsDeleted)
+           .OrderBy(m => m.Room.RoomNumber)
+           .AsNoTracking()
+           .ToListAsync();
+   }
+
+
+----------------------------------------------------------------------------------------------------
+4. MODULE INVOICES & BILLING (InvoiceRepository.cs) ⭐
+----------------------------------------------------------------------------------------------------
+
+4.1. Lấy danh sách phòng ĐANG CÓ NGƯỜI Ở nhưng CHƯA ĐƯỢC TẠO HÓA ĐƠN tháng này:
+   public async Task<List<Room>> GetRoomsPendingInvoiceAsync(int houseId, int month, int year)
+   {
+       // Lấy các phòng đang thuê nhưng chưa có hóa đơn tương ứng với tháng/năm đó
+       return await _context.Rooms
+           .Where(r => r.HouseId == houseId 
+                    && r.Status == RoomStatus.Occupied 
+                    && !r.IsDeleted)
+           .Where(r => !_context.Invoices.Any(i => i.RoomId == r.Id 
+                                                && i.Month == month 
+                                                && i.Year == year 
+                                                && !i.IsDeleted))
+           .Include(r => r.MeterReadings.Where(m => m.Month == month && m.Year == year))
+           .ToListAsync();
+   }
+
+4.2. Lấy danh sách hóa đơn theo trạng thái (Chưa thanh toán / Đã thanh toán / Quá hạn):
+   public async Task<List<Invoice>> GetInvoicesByStatusAsync(int houseId, int? month, int? year, InvoiceStatus? status)
+   {
+       var query = _context.Invoices
+           .Include(i => i.Room)
+           .Where(i => i.Room.HouseId == houseId && !i.IsDeleted);
+
+       if (month.HasValue && year.HasValue)
+           query = query.Where(i => i.Month == month.Value && i.Year == year.Value);
+
+       if (status.HasValue)
+           query = query.Where(i => i.Status == status.Value);
+
+       return await query
+           .OrderByDescending(i => i.CreatedAt)
+           .AsNoTracking()
+           .ToListAsync();
+   }
+
+4.3. Lấy chi tiết 1 hóa đơn kèm thông tin Phòng, Dãy trọ và Lịch sử thanh toán:
+   public async Task<Invoice?> GetInvoiceDetailsAsync(int invoiceId)
+   {
+       return await _context.Invoices
+           .Include(i => i.Room)
+               .ThenInclude(r => r.House)
+           .Include(i => i.Payments)
+           .FirstOrDefaultAsync(i => i.Id == invoiceId && !i.IsDeleted);
+   }
+
+
+----------------------------------------------------------------------------------------------------
+5. MODULE DASHBOARD & THỐNG KÊ (DashboardRepository.cs)
+----------------------------------------------------------------------------------------------------
+
+5.1. Thống kê tổng doanh thu đã thu vs tổng nợ chưa thu trong tháng:
+   public async Task<(decimal TotalCollected, decimal TotalUnpaid)> GetRevenueSummaryAsync(int houseId, int month, int year)
+   {
+       var invoicesInMonth = _context.Invoices
+           .Where(i => i.Room.HouseId == houseId 
+                    && i.Month == month 
+                    && i.Year == year 
+                    && !i.IsDeleted);
+
+       // Cho SQL Server tự tính SUM dưới database, trả về 1 con số duy nhất:
+       decimal totalCollected = await invoicesInMonth
+           .Where(i => i.Status == InvoiceStatus.Paid)
+           .SumAsync(i => i.TotalAmount);
+
+       decimal totalUnpaid = await invoicesInMonth
+           .Where(i => i.Status == InvoiceStatus.Unpaid)
+           .SumAsync(i => i.TotalAmount);
+
+       return (totalCollected, totalUnpaid);
+   }
+
+5.2. Thống kê tình trạng phòng trọ (Bao nhiêu phòng trống, bao nhiêu phòng đang ở):
+   public async Task<Dictionary<RoomStatus, int>> GetRoomStatusCountsAsync(int houseId)
+   {
+       return await _context.Rooms
+           .Where(r => r.HouseId == houseId && !r.IsDeleted)
+           .GroupBy(r => r.Status)
+           .Select(g => new { Status = g.Key, Count = g.Count() })
+           .ToDictionaryAsync(x => x.Status, x => x.Count);
+   }
+
+5.3. Thống kê biểu đồ doanh thu 12 tháng trong năm (Dùng cho biểu đồ Chart.js ở Frontend):
+   public async Task<List<MonthlyRevenueDto>> GetYearlyRevenueChartAsync(int houseId, int year)
+   {
+       return await _context.Invoices
+           .Where(i => i.Room.HouseId == houseId 
+                    && i.Year == year 
+                    && i.Status == InvoiceStatus.Paid 
+                    && !i.IsDeleted)
+           .GroupBy(i => i.Month)
+           .Select(g => new MonthlyRevenueDto
+           {
+               Month = g.Key,
+               TotalRevenue = g.Sum(i => i.TotalAmount)
+           })
+           .OrderBy(x => x.Month)
+           .ToListAsync();
+   }
+====================================================================================================

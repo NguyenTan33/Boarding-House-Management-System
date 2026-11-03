@@ -16,7 +16,7 @@ var app = builder.Build();
 await IdentityDbSeeder.SeedRolesAndAdminAsync(app.Services);
 
 // 3. Middleware xử lý ngoại lệ tập trung (trả về JSON đẹp, mã lỗi chuẩn)
-app.UseMiddleware<ExceptionMiddleware>();
+app.UseGlobalExceptionMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

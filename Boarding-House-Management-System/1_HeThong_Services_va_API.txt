@@ -1,0 +1,185 @@
+====================================================================================================
+               HỆ THỐNG QUẢN LÝ NHÀ TRỌ - TỔNG HỢP SERVICES & API SPECIFICATION
+====================================================================================================
+Dự án: Boarding-House-Management-System
+Kiến trúc: Clean Architecture (.NET 9 Web API + React Frontend)
+Ngày tạo: 03/11/2026
+
+----------------------------------------------------------------------------------------------------
+MODULE 1: XÁC THỰC & TÀI KHOẢN (AUTH & IDENTITY)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IAuthService
+  - Implementation: AuthService
+  - Nhiệm vụ: Xử lý đăng ký, đăng nhập, cấp phát JWT Token và Refresh Token, đổi mật khẩu.
+
+* Tầng API (AuthController - Route: /api/auth):
+  1. POST /api/auth/register
+     - Body: { username, email, password, fullName, phoneNumber, role }
+     - Trả về: 201 Created + Thông báo đăng ký thành công.
+  2. POST /api/auth/login
+     - Body: { username, password }
+     - Trả về: 200 OK + { token, refreshToken, expiration, userProfile }.
+  3. POST /api/auth/refresh-token
+     - Body: { token, refreshToken }
+     - Trả về: 200 OK + { token mới, refreshToken mới }.
+  4. GET /api/auth/me (Cần [Authorize])
+     - Trả về: Thông tin tài khoản của người đang đăng nhập.
+
+----------------------------------------------------------------------------------------------------
+MODULE 2: QUẢN LÝ DÃY TRỌ / CHI NHÁNH (HOUSES)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IHouseService
+  - Implementation: HouseService
+  - Nhiệm vụ: Thêm/sửa/xóa dãy trọ, cấu hình đơn giá điện nước mặc định cho từng dãy.
+
+* Tầng API (HousesController - Route: /api/houses):
+  1. GET /api/houses
+     - Trả về: Danh sách các dãy trọ của chủ trọ (kèm số lượng phòng của mỗi dãy).
+  2. GET /api/houses/{id}
+     - Trả về: Chi tiết 1 dãy trọ (Tên, Địa chỉ, Đơn giá điện, Đơn giá nước, Phí dịch vụ).
+  3. POST /api/houses
+     - Body: { name, address, defaultElectricityPrice, defaultWaterPrice, defaultServiceFee }
+     - Trả về: 201 Created + HouseId.
+  4. PUT /api/houses/{id}
+     - Body: Thông tin cập nhật dãy trọ.
+     - Trả về: 200 OK hoặc 204 NoContent.
+  5. DELETE /api/houses/{id}
+     - Trả về: 204 NoContent (Chỉ cho phép xóa nếu dãy này không có phòng nào).
+
+----------------------------------------------------------------------------------------------------
+MODULE 3: QUẢN LÝ PHÒNG TRỌ (ROOMS)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IRoomService
+  - Implementation: RoomService
+  - Nhiệm vụ: CRUD phòng trọ, lọc phòng trống/đang ở, cập nhật giá thuê, chuyển trạng thái bảo trì.
+
+* Tầng API (RoomsController - Route: /api/rooms):
+  1. GET /api/rooms
+     - Query: ?houseId=1&status=Available&floor=2&minPrice=2000000&maxPrice=3500000
+     - Trả về: Danh sách phòng trọ đã lọc và phân trang.
+  2. GET /api/rooms/{id}
+     - Trả về: Chi tiết phòng (kèm hợp đồng đang thuê hiện tại nếu có).
+  3. POST /api/rooms
+     - Body: { houseId, roomNumber, price, floor, size, maxRenters, hasBalcony }
+     - Trả về: 201 Created + RoomId.
+  4. PUT /api/rooms/{id}
+     - Body: Cập nhật thông tin phòng (giá, diện tích, số người...).
+     - Trả về: 204 NoContent.
+  5. PATCH /api/rooms/{id}/status
+     - Body: { status: "Maintenance" | "Available" }
+     - Trả về: 200 OK.
+  6. DELETE /api/rooms/{id}
+     - Trả về: 204 NoContent (Chặn lại nếu phòng đang có người ở).
+
+----------------------------------------------------------------------------------------------------
+MODULE 4: KHÁCH THUÊ & HỢP ĐỒNG (TENANTS & CONTRACTS)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: ITenantService, IContractService
+  - Implementation: TenantService, ContractService
+  - Nhiệm vụ: Quản lý hồ sơ khách trọ (CCCD/SĐT), lập hợp đồng gán khách vào phòng, thanh lý hợp đồng.
+
+* Tầng API:
+  * TenantsController (/api/tenants):
+    1. GET /api/tenants?keyword=tan&roomId=1
+       - Trả về: Danh sách khách thuê (tìm theo tên, CCCD, số điện thoại).
+    2. POST /api/tenants
+       - Body: { fullName, phoneNumber, citizenId, dateOfBirth, hometown }
+       - Trả về: 201 Created + TenantId.
+    3. PUT /api/tenants/{id}
+       - Body: Cập nhật thông tin khách.
+  
+  * ContractsController (/api/contracts):
+    1. POST /api/contracts
+       - Body: { roomId, tenantId, startDate, endDate, depositAmount, rentalPrice }
+       - Logic: Gán khách vào phòng -> Thu cọc -> Đổi Room.Status = Occupied.
+       - Trả về: 201 Created + ContractId.
+    2. GET /api/contracts/active
+       - Trả về: Danh sách hợp đồng đang còn hiệu lực.
+    3. GET /api/contracts/expiring?days=30
+       - Trả về: Danh sách các hợp đồng sắp hết hạn trong 30 ngày để chủ trọ gia hạn.
+    4. POST /api/contracts/{id}/terminate
+       - Body: { returnDepositAmount, deductions, reason }
+       - Logic: Thanh lý hợp đồng, trả phòng, hoàn cọc thừa -> Đổi Room.Status = Available.
+
+----------------------------------------------------------------------------------------------------
+MODULE 5: CHỈ SỐ ĐIỆN - NƯỚC (METER READINGS)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IMeterReadingService
+  - Implementation: MeterReadingService
+  - Nhiệm vụ: Ghi nhận số điện nước hàng tháng, kiểm tra số mới >= số cũ, cảnh báo bất thường.
+
+* Tầng API (MeterReadingsController - Route: /api/meter-readings):
+  1. GET /api/meter-readings?houseId=1&month=11&year=2026
+     - Trả về: Bảng theo dõi số điện nước của tất cả các phòng trong tháng.
+  2. POST /api/meter-readings
+     - Body: { roomId, month, year, oldElectricity, newElectricity, oldWater, newWater }
+     - Trả về: 201 Created.
+  3. POST /api/meter-readings/bulk
+     - Body: Mảng danh sách chỉ số của 10-20 phòng ghi cùng một lúc.
+     - Trả về: 200 OK.
+  4. GET /api/meter-readings/rooms/{roomId}/previous
+     - Trả về: Chỉ số tháng trước của phòng để làm mốc tự động điền vào ô "Số cũ".
+
+----------------------------------------------------------------------------------------------------
+MODULE 6: HÓA ĐƠN & TÍNH TIỀN (INVOICES / BILLING) ⭐
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IBillingService
+  - Implementation: BillingService
+  - Nhiệm vụ: Tự động tính: Tiền phòng + (Số điện * Giá điện) + (Số nước * Giá nước) + Dịch vụ -> Xuất hóa đơn.
+
+* Tầng API (InvoicesController - Route: /api/invoices):
+  1. POST /api/invoices/generate-monthly
+     - Body: { houseId, month, year, dueDate }
+     - Logic: Quét toàn bộ phòng đang thuê -> Tính toán điện nước -> Sinh hóa đơn hàng loạt.
+     - Trả về: 201 Created + Thống kê số lượng hóa đơn đã tạo.
+  2. GET /api/invoices
+     - Query: ?month=11&year=2026&status=Unpaid&roomId=5
+     - Trả về: Danh sách hóa đơn (lọc Chưa trả / Đã trả / Quá hạn).
+  3. GET /api/invoices/{id}
+     - Trả về: Chi tiết 1 hóa đơn đầy đủ các khoản thu (để in hóa đơn hoặc gửi Zalo).
+  4. PATCH /api/invoices/{id}/cancel
+     - Trả về: 200 OK (Hủy hóa đơn nếu ghi nhầm số điện nước).
+
+----------------------------------------------------------------------------------------------------
+MODULE 7: THANH TOÁN ONLINE VIETQR / SEPAY (PAYMENTS) ⭐
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IPaymentService
+  - Implementation: PaymentService
+  - Nhiệm vụ: Tạo link mã VietQR động, lắng nghe Webhook SePay/Ngân hàng để tự động gạch nợ hóa đơn.
+
+* Tầng API (PaymentsController - Route: /api/payments):
+  1. GET /api/payments/{invoiceId}/vietqr
+     - Trả về: URL hình ảnh mã VietQR ngân hàng (kèm đúng số tài khoản, số tiền và nội dung PHONG101 T11).
+  2. POST /api/payments/cash
+     - Body: { invoiceId, amountPaid, note }
+     - Trả về: 200 OK (Xác nhận khách đã đóng tiền mặt trực tiếp cho chủ trọ).
+  3. POST /api/payments/sepay-webhook (Cổng nhận thông báo tự động)
+     - Nhận dữ liệu bắn từ SePay khi khách quét QR chuyển khoản.
+     - Logic: So khớp số tiền + nội dung chuyển khoản -> Đổi Invoice.Status = Paid -> Ghi log Payment.
+     - Trả về: { success: true }.
+
+----------------------------------------------------------------------------------------------------
+MODULE 8: BÁO CÁO THỐNG KÊ (DASHBOARD)
+----------------------------------------------------------------------------------------------------
+* Tầng Application:
+  - Interface: IDashboardService
+  - Implementation: DashboardService
+  - Nhiệm vụ: Thống kê doanh thu, tỷ lệ phòng trống, theo dõi công nợ.
+
+* Tầng API (DashboardController - Route: /api/dashboard):
+  1. GET /api/dashboard/summary
+     - Trả về:
+       + Doanh thu dự kiến tháng này
+       + Doanh thu thực tế đã thu
+       + Tổng tiền nợ chưa thu
+       + Tổng số phòng: Tổng số, Đang ở, Đang trống, Đang bảo trì
+  2. GET /api/dashboard/revenue-chart?year=2026
+     - Trả về: Biểu đồ doanh thu 12 tháng trong năm cho Chart.js ở Frontend.
+====================================================================================================
