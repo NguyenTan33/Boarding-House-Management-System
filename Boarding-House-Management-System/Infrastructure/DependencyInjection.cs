@@ -72,11 +72,13 @@ namespace Infrastructure
 
             // 5. Đăng ký Repository Pattern
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IHouseRepository, HouseRepository>();
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<ITenantRepository, TenantRepository>();
             services.AddScoped<IMeterReadingRepository, MeterReadingRepository>();
             services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
 
             return services;

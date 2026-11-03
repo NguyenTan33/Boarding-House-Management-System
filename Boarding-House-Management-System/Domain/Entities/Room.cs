@@ -81,6 +81,15 @@ namespace Domain.Entities
             IsActive = isActive;
         }
 
+        // Cập nhật số phòng
+        public void UpdateRoomNumber(string roomNumber)
+        {
+            if (string.IsNullOrWhiteSpace(roomNumber))
+                throw new ValidationException("Số/Tên phòng không được để trống.");
+
+            RoomNumber = roomNumber.Trim();
+        }
+
         // Cập nhật giá thuê
         public void UpdatePrice(decimal price)
         {

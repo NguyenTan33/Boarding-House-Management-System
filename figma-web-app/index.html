@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenHouse Living - Hệ Thống Nhà Trọ Xanh & Hiện Đại</title>
+  <meta name="description" content="Hệ thống phòng trọ cao cấp, full nội thất, khóa vân tay, giờ giấc tự do. Vị trí trung tâm gần chợ dân sinh, bệnh viện, trường đại học trọng điểm.">
+  
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="GreenHouse Living - Không Gian Sống Tiện Nghi & An Ninh">
+  <meta property="og:description" content="Phòng trọ cao cấp trung tâm, gần chợ, bệnh viện, trường đại học. Liên hệ xem phòng thực tế ngay!">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            zalo: '#0068ff',
+          },
+          animation: {
+            'bounce-subtle': 'bounceSubtle 2s infinite',
+            'pulse-ring': 'pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'phone-shake': 'phoneShake 2.5s infinite',
+          },
+          keyframes: {
+            bounceSubtle: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-6px)' },
+            },
+            pulseRing: {
+              '0%': { transform: 'scale(0.95)', boxShadow: '0 0 0 0 rgba(16, 185, 129, 0.7)' },
+              '70%': { transform: 'scale(1)', boxShadow: '0 0 0 16px rgba(16, 185, 129, 0)' },
+              '100%': { transform: 'scale(0.95)', boxShadow: '0 0 0 0 rgba(16, 185, 129, 0)' },
+            },
+            phoneShake: {
+              '0%, 100%': { transform: 'rotate(0deg)' },
+              '10%, 30%, 50%': { transform: 'rotate(-12deg)' },
+              '20%, 40%': { transform: 'rotate(12deg)' },
+              '60%': { transform: 'rotate(0deg)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* Glassmorphism & Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    .custom-map-container {
+      border-radius: 1.25rem;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- 1. NAVIGATION BAR (HEADER)                                                -->
+  <!-- ========================================================================= -->
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform duration-200">
+          <i class="fa-solid fa-house-chimney-window text-xl"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-brand-800 to-brand-600 bg-clip-text text-transparent">GREEN HOUSE</span>
+          <span class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Hệ Thống Nhà Trọ Cao Cấp</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#gioi-thieu" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors">Giới Thiệu</a>
+        <a href="#khong-gian-phong" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors">Không Gian Phòng</a>
+        <a href="#tien-ich" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors">Tiện Ích & An Ninh</a>
+        <a href="#vi-tri-ket-noi" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-location-dot text-brand-600 text-xs"></i>
+          Vị Trí & Ngoại Khu
+        </a>
+        <a href="#dat-lich" class="text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors">Hẹn Xem Trọ</a>
+      </nav>
+
+      <!-- Right Action Group: Auth + Hotline -->
+      <div id="auth-header-container" class="flex items-center gap-3">
+        <!-- Hotline Badge Pill -->
+        <a href="tel:0988776655" class="hidden xl:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <i class="fa-solid fa-phone text-brand-600"></i>
+          <span>0988.776.655</span>
+        </a>
+
+        <!-- Login Button -->
+        <button onclick="openLoginModal()" class="px-4 py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-brand-600 transition-colors rounded-xl hover:bg-slate-100 border border-transparent hover:border-slate-200">
+          <i class="fa-regular fa-user mr-1.5"></i> Đăng Nhập
+        </button>
+
+        <!-- Register Button -->
+        <button onclick="openRegisterModal()" class="px-4 py-2 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-teal-500 hover:from-brand-700 hover:to-teal-600 rounded-xl shadow-sm hover:shadow-brand-500/25 transition-all">
+          Đăng Ký
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. HERO SECTION (IMPRESSIVE & OBJECTIVE VISUALS)                          -->
+  <!-- ========================================================================= -->
+  <section id="gioi-thieu" class="pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden relative">
+    <!-- Background Decor Blobs -->
+    <div class="absolute top-1/4 -left-20 w-96 h-96 bg-brand-200/40 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 right-0 w-80 h-80 bg-teal-200/40 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Content Column -->
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+          
+          <!-- Top Trust Badge -->
+          <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs sm:text-sm font-bold shadow-xs">
+            <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            Hệ Thống Nhà Trọ Chuẩn Xanh • Giờ Giấc Tự Do 24/7
+          </div>
+
+          <!-- Headline -->
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.2]">
+            Không Gian Sống Tiện Nghi, <br class="hidden sm:inline" />
+            <span class="bg-gradient-to-r from-brand-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+              An Ninh Chuẩn Mực & Vị Trí Vàng
+            </span>
+          </h1>
+
+          <!-- Description -->
+          <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            Phòng mới 100%, ban công đón nắng gió tự nhiên, khóa vân tay thẻ từ hiện đại. Tọa lạc ngay trục giao thông huyết mạch, liền kề các trường đại học, bệnh viện đa khoa và khu chợ dân sinh sầm uất.
+          </p>
+
+          <!-- Core Feature Pills -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center sm:items-start">
+              <i class="fa-solid fa-fingerprint text-brand-600 text-xl mb-1.5"></i>
+              <span class="text-xs font-bold text-slate-800">Khóa Vân Tay</span>
+              <span class="text-[11px] text-slate-600">Camera AI 24/7</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center sm:items-start">
+              <i class="fa-solid fa-clock text-amber-500 text-xl mb-1.5"></i>
+              <span class="text-xs font-bold text-slate-800">Giờ Giấc Tự Do</span>
+              <span class="text-[11px] text-slate-600">Không chung chủ</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center sm:items-start">
+              <i class="fa-solid fa-bolt text-teal-600 text-xl mb-1.5"></i>
+              <span class="text-xs font-bold text-slate-800">Sạc Xe Điện</span>
+              <span class="text-[11px] text-slate-600">Hầm xe rộng rãi</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex flex-col items-center sm:items-start">
+              <i class="fa-solid fa-shield-halved text-blue-600 text-xl mb-1.5"></i>
+              <span class="text-xs font-bold text-slate-800">PCCC Đạt Chuẩn</span>
+              <span class="text-[11px] text-slate-600">Kiểm định định kỳ</span>
+            </div>
+          </div>
+
+          <!-- CTAs & Live Badge -->
+          <div class="pt-4 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <a href="#dat-lich" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg shadow-brand-600/30 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-calendar-check text-base"></i>
+              Đặt Lịch Hẹn Xem Trọ Thực Tế
+            </a>
+            <a href="#khong-gian-phong" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-sm border border-slate-300 shadow-xs transition-all flex items-center justify-center gap-2">
+              <i class="fa-regular fa-eye text-base text-brand-600"></i>
+              Khám Phá Phòng Còn Trống
+            </a>
+          </div>
+
+          <!-- Live Room Status Alert (No Price) -->
+          <div class="flex items-center justify-center lg:justify-start gap-3 text-xs text-slate-500 font-medium pt-2">
+            <span class="inline-flex items-center gap-1.5 text-emerald-700 font-bold bg-emerald-100/70 px-2.5 py-1 rounded-full">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              Hiện đang còn 3 phòng trống
+            </span>
+            <span>•</span>
+            <span>Hỗ trợ chuyển đồ miễn phí khi ký hợp đồng</span>
+          </div>
+
+        </div>
+
+        <!-- Right Visual Showcase Column -->
+        <div class="lg:col-span-5 relative">
+          <!-- Main Hero Image Frame -->
+          <div class="relative mx-auto max-w-md lg:max-w-none">
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-100 aspect-4/3 sm:aspect-16/11">
+              <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80" 
+                   alt="Phòng trọ cao cấp thực tế" 
+                   class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+              
+              <!-- Subtle Overlay Tag -->
+              <div class="absolute bottom-4 left-4 right-4 p-3.5 rounded-2xl bg-black/60 backdrop-blur-md text-white flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-semibold text-emerald-400">Ảnh chụp phòng mẫu thực tế</p>
+                  <p class="text-sm font-bold">Studio Duplex - Ban công đón gió</p>
+                </div>
+                <span class="px-2.5 py-1 bg-white/20 rounded-lg text-xs font-medium">Full Nội Thất</span>
+              </div>
+            </div>
+
+            <!-- Floating Mini Card 1: Security -->
+            <div class="absolute -top-6 -left-6 bg-white p-3.5 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900">An Ninh Tuyệt Đối</p>
+                <p class="text-[11px] text-slate-500">Cửa kiểm soát FaceID / Vân tay</p>
+              </div>
+            </div>
+
+            <!-- Floating Mini Card 2: Environment -->
+            <div class="absolute -bottom-6 -right-6 bg-white p-3.5 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-shield-virus"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-900">Môi Trường Văn Minh</p>
+                <p class="text-[11px] text-slate-500">100% Sinh viên & Người đi làm</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 3. ROOM SHOWCASE SECTION (KHÔNG HIỆN GIÁ - TẬP TRUNG KHÁCH QUAN & ĐẸP)     -->
+  <!-- ========================================================================= -->
+  <section id="khong-gian-phong" class="py-20 bg-slate-100/60 border-y border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+        <span class="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3.5 py-1.5 rounded-full border border-brand-200">
+          Bộ Sưu Tập Không Gian Sống Thực Tế
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900">
+          Khám Phá Các Loại Phòng Tiện Nghi
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          Tất cả phòng đều được thiết kế tối ưu ánh sáng tự nhiên, trang bị sẵn nội thất hiện đại và vệ sinh khép kín riêng biệt.
+        </p>
+      </div>
+
+      <!-- Filter Category Buttons -->
+      <div class="flex items-center justify-center flex-wrap gap-2.5 mb-10">
+        <button onclick="filterRooms('all')" id="filter-all" class="filter-btn px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-brand-600 text-white shadow-sm transition-all">
+          Tất Cả Loại Phòng
+        </button>
+        <button onclick="filterRooms('studio')" id="filter-studio" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all">
+          Studio Ban Công Thoáng
+        </button>
+        <button onclick="filterRooms('duplex')" id="filter-duplex" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all">
+          Phòng Gác Lửng Sang Trọng
+        </button>
+        <button onclick="filterRooms('1pn')" id="filter-1pn" class="filter-btn px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm bg-white text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all">
+          Căn Hộ Mini 1 Phòng Ngủ
+        </button>
+      </div>
+
+      <!-- Room Cards Grid (Hoàn toàn KHÔNG hiện giá tiền, chỉ hiển thị thông số & liên hệ) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Room Card 1 -->
+        <div class="room-card group bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col" data-category="studio">
+          <!-- Room Image -->
+          <div class="relative aspect-16/10 overflow-hidden bg-slate-200">
+            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80" 
+                 alt="Phòng Studio Ban Công" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-emerald-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-3 py-1 rounded-lg">
+              Còn 1 phòng tầng 3
+            </span>
+            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+              <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> 28 m²
+            </span>
+          </div>
+
+          <!-- Room Info -->
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 text-xs font-semibold text-brand-600 mb-1">
+                <i class="fa-solid fa-sun"></i> Ban công thoáng • Cửa sổ kính lớn
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
+                Studio View Thoáng Cửa Sổ Lớn
+              </h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">
+                Không gian thiết kế mở, đón gió tự nhiên 100%, trang bị đầy đủ giường nệm cao su, tủ áo âm tường, điều hòa Inverter.
+              </p>
+
+              <!-- Amenities Tags -->
+              <div class="flex flex-wrap gap-1.5 mt-4">
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-snowflake text-cyan-600 mr-1"></i> Máy lạnh Inverter</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-temperature-arrow-up text-amber-600 mr-1"></i> Nước nóng NLMT</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-bath text-indigo-600 mr-1"></i> WC khép kín</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-wifi text-emerald-600 mr-1"></i> Wifi riêng biệt</span>
+              </div>
+            </div>
+
+            <!-- Bottom Action (NO PRICE) -->
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div class="text-xs">
+                <span class="block text-slate-600 font-semibold">Tình trạng:</span>
+                <span class="font-bold text-emerald-600">Sẵn sàng dọn vào</span>
+              </div>
+              <button onclick="openBookingModal('Studio View Thoáng Cửa Sổ Lớn')" class="px-4 py-2.5 rounded-xl bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white font-bold text-xs transition-colors border border-brand-200 hover:border-brand-600 flex items-center gap-1.5">
+                <i class="fa-solid fa-phone-volume"></i> Liên hệ xem phòng
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Card 2 -->
+        <div class="room-card group bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col" data-category="duplex">
+          <!-- Room Image -->
+          <div class="relative aspect-16/10 overflow-hidden bg-slate-200">
+            <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=800&q=80" 
+                 alt="Phòng Gác Lửng Duplex" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-emerald-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-3 py-1 rounded-lg">
+              Còn 2 phòng tầng 2
+            </span>
+            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+              <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> 34 m²
+            </span>
+          </div>
+
+          <!-- Room Info -->
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 text-xs font-semibold text-brand-600 mb-1">
+                <i class="fa-solid fa-layer-group"></i> Gác đúc cao 2m • Không đụng đầu
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
+                Duplex Gác Lửng Cao Cấp
+              </h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">
+                Không gian sinh hoạt rộng rãi cho 2-4 người. Kệ bếp đá hoa cương, bồn rửa đôi, giếng trời đón gió cực kỳ mát mẻ.
+              </p>
+
+              <!-- Amenities Tags -->
+              <div class="flex flex-wrap gap-1.5 mt-4">
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-kitchen-set text-orange-600 mr-1"></i> Kệ bếp riêng</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-snowflake text-cyan-600 mr-1"></i> Máy lạnh 1.5 HP</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-box-archive text-stone-600 mr-1"></i> Tủ đồ âm tường</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-door-closed text-slate-600 mr-1"></i> Khóa số thông minh</span>
+              </div>
+            </div>
+
+            <!-- Bottom Action (NO PRICE) -->
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div class="text-xs">
+                <span class="block text-slate-600 font-semibold">Tình trạng:</span>
+                <span class="font-bold text-emerald-600">Sẵn sàng dọn vào</span>
+              </div>
+              <button onclick="openBookingModal('Duplex Gác Lửng Cao Cấp')" class="px-4 py-2.5 rounded-xl bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white font-bold text-xs transition-colors border border-brand-200 hover:border-brand-600 flex items-center gap-1.5">
+                <i class="fa-solid fa-phone-volume"></i> Liên hệ xem phòng
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Card 3 -->
+        <div class="room-card group bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col" data-category="1pn">
+          <!-- Room Image -->
+          <div class="relative aspect-16/10 overflow-hidden bg-slate-200">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80" 
+                 alt="Căn Hộ Mini 1PN" 
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-amber-500/90 backdrop-blur-xs text-white text-[11px] font-bold px-3 py-1 rounded-lg">
+              Sắp trống 1 phòng
+            </span>
+            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+              <i class="fa-solid fa-arrows-up-down-left-right mr-1"></i> 38 m²
+            </span>
+          </div>
+
+          <!-- Room Info -->
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 text-xs font-semibold text-brand-600 mb-1">
+                <i class="fa-solid fa-couch"></i> 1 Phòng ngủ + Phòng khách riêng
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
+                Căn Hộ Mini 1PN Riêng Biệt
+              </h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">
+                Không gian sống riêng tư chuẩn căn hộ cao cấp cho vợ chồng trẻ hoặc người đi làm. Bếp tách biệt hoàn toàn chống bám mùi.
+              </p>
+
+              <!-- Amenities Tags -->
+              <div class="flex flex-wrap gap-1.5 mt-4">
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-couch text-purple-600 mr-1"></i> Sofa phòng khách</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-vest text-emerald-600 mr-1"></i> Máy giặt riêng</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-tv text-blue-600 mr-1"></i> Smart TV 43 inch</span>
+                <span class="text-[11px] bg-slate-100 text-slate-700 px-2 py-1 rounded-md font-medium"><i class="fa-solid fa-wind text-teal-600 mr-1"></i> Ban công giặt phơi</span>
+              </div>
+            </div>
+
+            <!-- Bottom Action (NO PRICE) -->
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div class="text-xs">
+                <span class="block text-slate-600 font-semibold">Tình trạng:</span>
+                <span class="font-bold text-amber-600">Đăng ký giữ phòng</span>
+              </div>
+              <button onclick="openBookingModal('Căn Hộ Mini 1PN Riêng Biệt')" class="px-4 py-2.5 rounded-xl bg-brand-50 hover:bg-brand-600 text-brand-700 hover:text-white font-bold text-xs transition-colors border border-brand-200 hover:border-brand-600 flex items-center gap-1.5">
+                <i class="fa-solid fa-phone-volume"></i> Liên hệ xem phòng
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 4. TIỆN ÍCH NỘI KHU & AN NINH VƯỢT TRỘI (PILLARS OF TRUST)                -->
+  <!-- ========================================================================= -->
+  <section id="tien-ich" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto space-y-3 mb-16">
+        <span class="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3.5 py-1.5 rounded-full border border-brand-200">
+          Chất Lượng Sống Chuẩn Mực
+        </span>
+        <h2 class="text-3xl font-extrabold text-slate-900">
+          6 Trụ Cột An Ninh & Tiện Ích Nội Khu
+        </h2>
+        <p class="text-slate-600 text-sm sm:text-base">
+          Môi trường sống văn minh, yên tĩnh được quản lý chuyên nghiệp nhằm đảm bảo sự thoải mái tối đa cho quý cư dân.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Pillar 1 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">An Ninh Vân Tay & Camera AI</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Hệ thống cửa ra vào nhận diện vân tay/thẻ từ chống sao chép. Camera độ phân giải cao giám sát 24/7 khu vực nhà xe, hành lang và cổng chính.
+          </p>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-fire-extinguisher"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">PCCC Đạt Chuẩn Nghiệm Thu</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Đầy đủ chuông báo khói tự động từng phòng, bình bọt chữa cháy, họng nước vách tường và thang thoát hiểm ngoài trời đạt kiểm định an toàn PCCC.
+          </p>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Giờ Giấc Tự Do 100%</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Không chung chủ, tự do đi lại làm việc ca đêm hay về khuya. Mỗi cư dân sở hữu mã mở cửa riêng biệt, lịch sự và tôn trọng không gian riêng tư.
+          </p>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-charging-station"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Hầm Xe & Trạm Sạc Xe Điện</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Khu để xe máy rộng rãi, có phân ô rõ ràng, trang bị sẵn các ổ cắm sạc xe điện an toàn có cảm biến tự ngắt khi đầy bình phòng ngừa chập cháy.
+          </p>
+        </div>
+
+        <!-- Pillar 5 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Wifi 6 Tốc Độ Cao Riêng Biệt</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Mỗi tầng trang bị Access Point công nghiệp chuẩn Wifi 6, đường truyền cáp quang băng thông cao đáp ứng mượt mà học tập, họp Zoom và giải trí.
+          </p>
+        </div>
+
+        <!-- Pillar 6 -->
+        <div class="p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-xl hover:border-brand-200 transition-all duration-300">
+          <div class="w-14 h-14 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl mb-5">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Kỹ Thuật Hỗ Trợ Nhanh 24/7</h3>
+          <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+            Quản lý và thợ kỹ thuật túc trực. Sự cố bóng đèn, vòi nước, máy lạnh được tiếp nhận qua ứng dụng và khắc phục nhanh chóng trong ngày.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 5. VỊ TRÍ ĐẮC ĐỊA & KẾT NỐI NGOẠI KHU (TRỌNG TÂM CỦA BẠN - INTERACTIVE)    -->
+  <!-- ========================================================================= -->
+  <section id="vi-tri-ket-noi" class="py-20 bg-slate-900 text-white relative overflow-hidden">
+    <!-- Background Grid Texture -->
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      
+      <!-- Section Title -->
+      <div class="text-center max-w-3xl mx-auto space-y-3 mb-14">
+        <span class="text-xs font-bold text-brand-400 uppercase tracking-widest bg-brand-950/80 px-3.5 py-1.5 rounded-full border border-brand-800">
+          Bản Đồ Kết Nối & Tiện Ích Ngoại Khu
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+          Vị Trí Vàng Trung Tâm – Vạn Tiện Ích Xung Quanh
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base">
+          Tọa lạc tại khu vực dân trí cao, hẻm xe hơi thông thoáng, di chuyển nhanh chóng đến các bệnh viện tuyến đầu, trường đại học lớn và chợ truyền thống.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Interactive Category Tabs & Neighborhood List -->
+        <div class="lg:col-span-5 space-y-5">
+          
+          <!-- Category Selector -->
+          <div class="grid grid-cols-2 gap-2 bg-slate-800/80 p-1.5 rounded-2xl border border-slate-700">
+            <button onclick="switchLocationCategory('markets')" id="tab-loc-markets" class="loc-tab-btn py-2.5 px-3 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition-all">
+              <i class="fa-solid fa-basket-shopping text-emerald-300"></i> Chợ & Siêu Thị
+            </button>
+            <button onclick="switchLocationCategory('hospitals')" id="tab-loc-hospitals" class="loc-tab-btn py-2.5 px-3 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center gap-1.5 transition-all">
+              <i class="fa-solid fa-hospital text-red-400"></i> Bệnh Viện & Y Tế
+            </button>
+            <button onclick="switchLocationCategory('universities')" id="tab-loc-universities" class="loc-tab-btn py-2.5 px-3 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center gap-1.5 transition-all">
+              <i class="fa-solid fa-graduation-cap text-amber-400"></i> Trường Đại Học
+            </button>
+            <button onclick="switchLocationCategory('transports')" id="tab-loc-transports" class="loc-tab-btn py-2.5 px-3 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center gap-1.5 transition-all">
+              <i class="fa-solid fa-route text-blue-400"></i> Tuyến Đường Chính
+            </button>
+          </div>
+
+          <!-- Dynamic List of Nearby Points -->
+          <div id="location-cards-container" class="space-y-3">
+            <!-- Cards will be populated by JS based on tab selection -->
+          </div>
+
+          <!-- Location Note Card -->
+          <div class="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/80 text-xs text-slate-300 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-road"></i>
+            </div>
+            <span>
+              <strong>Giao thông thuận tiện:</strong> Hẻm bê tông 6m ô tô quay đầu, cao ráo, hoàn toàn <strong>không ngập nước</strong> vào mùa mưa.
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Right: Real Leaflet Interactive Map -->
+        <div class="lg:col-span-7">
+          <div class="relative bg-slate-800 rounded-3xl p-3 border border-slate-700 shadow-2xl">
+            <!-- Map Top Bar -->
+            <div class="flex items-center justify-between px-3 py-2 text-xs text-slate-400 border-b border-slate-700/60 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-slate-200 font-bold">Vị Trí Thực Tế Trên Bản Đồ</span>
+              </div>
+              <span class="text-[11px] text-slate-400"><i class="fa-solid fa-hand-pointer mr-1"></i> Kéo & thu phóng để xem xung quanh</span>
+            </div>
+
+            <!-- Leaflet Map Canvas Container -->
+            <div id="leaflet-map" class="w-full h-[430px] rounded-2xl z-0"></div>
+
+            <!-- Map Floating Legend -->
+            <div class="absolute bottom-6 left-6 right-6 sm:right-auto bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-700 text-xs text-slate-200 flex flex-wrap items-center gap-4 z-10 shadow-lg">
+              <div class="flex items-center gap-1.5 font-bold text-emerald-400">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block border-2 border-white"></span>
+                Nhà Trọ GreenHouse
+              </div>
+              <div class="flex items-center gap-1.5 text-slate-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>
+                Tiện Ích Ngoại Khu
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 6. ĐẶT LỊCH HẸN XEM TRỌ TRỰC TIẾP (FAST BOOKING FORM)                     -->
+  <!-- ========================================================================= -->
+  <section id="dat-lich" class="py-20 bg-slate-50 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 shadow-xl relative overflow-hidden">
+        <!-- Accent decorative ring -->
+        <div class="absolute -top-12 -right-12 w-48 h-48 bg-brand-100 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="text-center max-w-xl mx-auto space-y-2 mb-8">
+          <span class="text-xs font-bold text-brand-600 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full border border-brand-200">
+            Xem Phòng Thực Tế Miễn Phí
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">
+            Đặt Lịch Hẹn Xem Phòng Trực Tiếp
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-600">
+            Vui lòng để lại thông tin, quản lý nhà trọ sẽ liên hệ xác nhận và chuẩn bị phòng đón tiếp bạn chu đáo nhất!
+          </p>
+        </div>
+
+        <!-- Appointment Form -->
+        <form id="appointment-form" onsubmit="handleAppointmentSubmit(event)" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            
+            <!-- Full Name -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700">Họ và tên của bạn <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-user"></i>
+                </span>
+                <input type="text" id="booking-name" required placeholder="Nguyễn Văn A" 
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+              </div>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700">Số điện thoại liên hệ <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-phone"></i>
+                </span>
+                <input type="tel" id="booking-phone" required pattern="[0-9]{10}" placeholder="0912345678" 
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+              </div>
+            </div>
+
+            <!-- Room Preference -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700">Loại phòng bạn muốn xem</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-door-open"></i>
+                </span>
+                <select id="booking-room" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all appearance-none">
+                  <option value="Tất cả các phòng còn trống">Tất cả các phòng còn trống</option>
+                  <option value="Studio View Thoáng Cửa Sổ Lớn">Studio View Thoáng Cửa Sổ Lớn (28m²)</option>
+                  <option value="Duplex Gác Lửng Cao Cấp">Duplex Gác Lửng Cao Cấp (34m²)</option>
+                  <option value="Căn Hộ Mini 1PN Riêng Biệt">Căn Hộ Mini 1PN Riêng Biệt (38m²)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Date & Time Slot -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-700">Khung giờ hẹn thuận tiện</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fa-regular fa-clock"></i>
+                </span>
+                <select id="booking-time" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all appearance-none">
+                  <option value="Hôm nay (Buổi chiều: 14h - 17h)">Hôm nay (Buổi chiều: 14h - 17h)</option>
+                  <option value="Hôm nay (Buổi tối: 18h - 20h)">Hôm nay (Buổi tối: 18h - 20h)</option>
+                  <option value="Ngày mai (Buổi sáng: 8h - 11h)">Ngày mai (Buổi sáng: 8h - 11h)</option>
+                  <option value="Ngày mai (Buổi chiều: 14h - 17h)">Ngày mai (Buổi chiều: 14h - 17h)</option>
+                  <option value="Cuối tuần này (Thứ 7 / CN)">Cuối tuần này (Thứ 7 / CN)</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Note -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-700">Ghi chú thêm (Nếu có nhu cầu chuyển vào ngày nào)</label>
+            <textarea id="booking-note" rows="2" placeholder="Ví dụ: Mình dự kiến chuyển vào đầu tháng sau, muốn xem phòng có ban công đón nắng..." 
+                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all"></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-teal-500 hover:from-brand-700 hover:to-teal-600 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-brand-600/30 hover:shadow-xl transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i>
+            Xác Nhận Đặt Lịch Xem Phòng
+          </button>
+        </form>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- 7. FOOTER                                                                 -->
+  <!-- ========================================================================= -->
+  <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        
+        <div class="space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center">
+              <i class="fa-solid fa-house-chimney-window"></i>
+            </div>
+            <span class="text-lg font-extrabold text-white">GREEN HOUSE</span>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Hệ thống nhà trọ & căn hộ dịch vụ cao cấp. Mang đến không gian sống an toàn, văn minh và tiện nghi vượt trội cho bạn.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Thông Tin Liên Hệ</h4>
+          <ul class="space-y-2 text-xs">
+            <li><i class="fa-solid fa-location-dot text-brand-500 mr-2"></i> Số 123 Đường Số 8, Phường Linh Trung, TP. Thủ Đức</li>
+            <li><i class="fa-solid fa-phone text-brand-500 mr-2"></i> Hotline: 0988.776.655 (Zalo 24/7)</li>
+            <li><i class="fa-solid fa-envelope text-brand-500 mr-2"></i> support@greenhouse.vn</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Thời Gian Làm Việc</h4>
+          <ul class="space-y-2 text-xs">
+            <li>• Tiếp khách xem phòng: 07:30 - 21:00 hàng ngày</li>
+            <li>• Hỗ trợ kỹ thuật: 24/7 qua Hotline/Zalo</li>
+            <li>• Thứ 7, Chủ Nhật và ngày lễ: Mở cửa đón tiếp bình thường</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Cổng Dành Cho Khách Trọ</h4>
+          <p class="text-xs text-slate-400 mb-3">
+            Khách trọ đang ở có thể đăng nhập để kiểm tra số điện nước và thanh toán VietQR hàng tháng.
+          </p>
+          <button onclick="openLoginModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition-colors">
+            <i class="fa-solid fa-qrcode text-emerald-400 mr-1.5"></i> Cổng Tra Cứu Hóa Đơn
+          </button>
+        </div>
+
+      </div>
+
+      <div class="pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p>© 2026 GreenHouse Management System. Bản quyền thuộc về Hệ thống Nhà Trọ Xanh.</p>
+        <p class="flex items-center gap-3">
+          <span class="hover:text-slate-400 cursor-pointer">Chính sách bảo mật</span>
+          <span>•</span>
+          <span class="hover:text-slate-400 cursor-pointer">Quy chế phòng trọ</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- 8. CÁC NÚT TRÒN LIÊN HỆ NỔI (FLOATING ACTION BUTTONS - FAB)               -->
+  <!-- ========================================================================= -->
+  <aside aria-label="Nút liên hệ nhanh" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3.5">
+    
+    <!-- Nút Lên Đầu Trang (Ẩn khi ở đầu trang) -->
+    <button id="btn-scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+            class="opacity-0 pointer-events-none transition-all duration-300 w-11 h-11 rounded-full bg-white/90 text-slate-700 shadow-md border border-slate-200 flex items-center justify-center hover:bg-slate-100 hover:scale-110">
+      <i class="fa-solid fa-arrow-up text-sm"></i>
+    </button>
+
+    <!-- Nút Tròn 1: Đặt Lịch Hẹn Xem Trọ Nhanh -->
+    <button onclick="openBookingModal('Tất cả các phòng còn trống')" 
+            title="Đặt lịch xem trọ trực tiếp"
+            class="group relative w-14 h-14 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-xl shadow-orange-500/30 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+      <i class="fa-solid fa-calendar-days text-xl"></i>
+      <!-- Tooltip -->
+      <span class="absolute right-16 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+        Hẹn Xem Trọ Ngay
+      </span>
+    </button>
+
+    <!-- Nút Tròn 2: Chat Zalo Trực Tiếp -->
+    <a href="https://zalo.me/0988776655" target="_blank" rel="noopener noreferrer"
+       title="Chat Zalo nhận tư vấn ngay"
+       class="group relative w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-white shadow-xl shadow-blue-500/30 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+      <span class="text-xs font-black tracking-tighter">Zalo</span>
+      <!-- Tooltip -->
+      <span class="absolute right-16 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+        Nhắn Zalo Chủ Trọ
+      </span>
+    </a>
+
+    <!-- Nút Tròn 3: Gọi Hotline (Có hiệu ứng rung lắc & vòng sóng lan tỏa) -->
+    <a href="tel:0988776655" 
+       title="Gọi Hotline tư vấn 24/7"
+       class="group relative w-14 h-14 rounded-full bg-emerald-500 text-white shadow-xl shadow-emerald-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-200 animate-pulse-ring">
+      <i class="fa-solid fa-phone text-xl animate-phone-shake"></i>
+      <!-- Tooltip -->
+      <span class="absolute right-16 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md">
+        Gọi Ngay: 0988.776.655
+      </span>
+    </a>
+
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- 9. MODALS: LOGIN & REGISTER & BOOKING CONFIRMATION                        -->
+  <!-- ========================================================================= -->
+  
+  <!-- MODAL ĐĂNG NHẬP (LOGIN) -->
+  <div id="login-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-300">
+    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-bounce-subtle">
+      
+      <!-- Close Button -->
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div class="p-8">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center mx-auto mb-3 text-xl">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <h3 class="text-xl font-extrabold text-slate-900">Đăng Nhập Hệ Thống</h3>
+          <p class="text-xs text-slate-500 mt-1">Dành cho khách đang thuê hoặc ban quản lý trọ</p>
+        </div>
+
+        <!-- Role Select Tabs -->
+        <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl mb-5 text-xs font-bold">
+          <button type="button" id="tab-role-tenant" onclick="switchLoginRole('tenant')" class="py-2 rounded-lg bg-white text-slate-800 shadow-xs">
+            Khách Thuê Trọ
+          </button>
+          <button type="button" id="tab-role-manager" onclick="switchLoginRole('manager')" class="py-2 rounded-lg text-slate-500 hover:text-slate-800">
+            Chủ Trọ / Quản Lý
+          </button>
+        </div>
+
+        <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-700">Tên đăng nhập hoặc Số điện thoại</label>
+            <input type="text" id="login-username" required placeholder="0988xxxxxx" value="0988776655" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <label class="text-xs font-bold text-slate-700">Mật khẩu</label>
+              <a href="#" class="text-[11px] font-semibold text-brand-600 hover:underline">Quên mật khẩu?</a>
+            </div>
+            <input type="password" id="login-password" required placeholder="••••••••" value="123456" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+            Đăng Nhập Ngay
+          </button>
+        </form>
+
+        <div class="mt-5 text-center text-xs text-slate-500">
+          Chưa có tài khoản? 
+          <button onclick="closeLoginModal(); openRegisterModal()" class="font-bold text-brand-600 hover:underline">Đăng ký ngay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ĐĂNG KÝ (REGISTER) -->
+  <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-300">
+    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+      
+      <!-- Close Button -->
+      <button onclick="closeRegisterModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+
+      <div class="p-8">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mx-auto mb-3 text-xl">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h3 class="text-xl font-extrabold text-slate-900">Tạo Tài Khoản Mới</h3>
+          <p class="text-xs text-slate-500 mt-1">Đăng ký hồ sơ để lưu thông tin hợp đồng & phòng trọ</p>
+        </div>
+
+        <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-700">Họ và tên</label>
+            <input type="text" id="reg-name" required placeholder="Nguyễn Văn A" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-700">Số điện thoại</label>
+            <input type="tel" id="reg-phone" required placeholder="09xxxxxxxx" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-slate-700">Mật khẩu</label>
+            <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <button type="submit" class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl shadow-md transition-all mt-2">
+            Đăng Ký Tài Khoản
+          </button>
+        </form>
+
+        <div class="mt-4 text-center text-xs text-slate-500">
+          Đã có tài khoản? 
+          <button onclick="closeRegisterModal(); openLoginModal()" class="font-bold text-brand-600 hover:underline">Đăng nhập</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed top-24 right-5 z-50 transform translate-x-full transition-transform duration-300 pointer-events-none">
+    <div class="px-5 py-3.5 rounded-2xl bg-slate-900 text-white shadow-2xl border border-slate-700 flex items-center gap-3">
+      <div id="toast-icon" class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <div>
+        <p id="toast-title" class="text-xs font-bold text-white">Thành Công</p>
+        <p id="toast-msg" class="text-[11px] text-slate-300">Nội dung thông báo</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 10. JAVASCRIPT LOGIC & LEAFLET MAP INITIALIZATION                         -->
+  <!-- ========================================================================= -->
+  <!-- Leaflet JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // -------------------------------------------------------------
+    // Dữ Liệu Vị Trí & Tiện Ích Ngoại Khu (Near Hubs & Landmarks)
+    // -------------------------------------------------------------
+    const neighborhoodData = {
+      markets: [
+        {
+          name: "Chợ Dân Sinh Linh Trung",
+          dist: "150 mét",
+          time: "2 phút đi bộ",
+          tag: "Rau củ tươi • Đồ ăn sáng phong phú",
+          desc: "Họp chợ từ 5h sáng đến 19h tối, đồ tươi sống giá bình dân cho sinh viên và cư dân."
+        },
+        {
+          name: "Siêu Thị WinMart+ / Bách Hóa Xanh",
+          dist: "300 mét",
+          time: "3 phút đi bộ",
+          tag: "Mở cửa 06:00 - 22:00",
+          desc: "Đầy đủ thực phẩm sạch đóng gói, đồ gia dụng, thanh toán ví điện tử nhanh chóng."
+        },
+        {
+          name: "Trung Tâm Thương Mại Vincom Plaza",
+          dist: "1.2 km",
+          time: "4 phút đi xe máy",
+          tag: "Rạp chiếu phim CGV • Mua sắm",
+          desc: "Khu phức hợp ẩm thực, thời trang và rạp chiếu phim giải trí cuối tuần."
+        }
+      ],
+      hospitals: [
+        {
+          name: "Bệnh Viện Đa Khoa Khu Vực",
+          dist: "850 mét",
+          time: "3 phút xe máy",
+          tag: "Cấp cứu 24/24 • BHYT",
+          desc: "Bệnh viện hạng 1 đầy đủ các chuyên khoa, trang thiết bị y tế hiện đại, an tâm sức khỏe."
+        },
+        {
+          name: "Trạm Y Tế Phường & Nhà Thuốc Long Châu",
+          dist: "120 mét",
+          time: "1 phút đi bộ",
+          tag: "Nhà thuốc 24/7 ngay đầu ngõ",
+          desc: "Tiện lợi mua thuốc cảm cúm, sơ cứu y tế thông thường mọi khung giờ trong ngày."
+        }
+      ],
+      universities: [
+        {
+          name: "Trường Đại Học Bách Khoa / Sư Phạm Kỹ Thuật",
+          dist: "1.3 km",
+          time: "5 phút xe máy",
+          tag: "Tuyến đường thẳng không kẹt xe",
+          desc: "Rất thuận tiện cho các bạn sinh viên và giảng viên đi học và làm đồ án nghiên cứu."
+        },
+        {
+          name: "Trường Đại Học Kinh Tế - Luật / Làng Đại Học",
+          dist: "2.1 km",
+          time: "7 phút xe máy",
+          tag: "Xe buýt tuyến 08, 10, 19 đón tận nơi",
+          desc: "Kết nối nhanh chóng bằng tuyến xe buýt sinh viên ngay đầu ngõ."
+        }
+      ],
+      transports: [
+        {
+          name: "Mặt Tiền Đường Huyết Mạch (Đường 30m)",
+          dist: "50 mét",
+          time: "1 phút đi bộ",
+          tag: "Hẻm bê tông 6m ô tô quay đầu",
+          desc: "Nhà trọ nằm cách mặt tiền đường lớn chỉ 50m, vừa yên tĩnh vừa thuận tiện bắt xe."
+        },
+        {
+          name: "Trạm Xe Buýt & Tuyến Metro Số 1",
+          dist: "250 mét",
+          time: "3 phút đi bộ",
+          tag: "Trạm xe buýt 06, 53, 56",
+          desc: "Dễ dàng di chuyển vào trung tâm Quận 1 hoặc Khu Công Nghệ Cao."
+        }
+      ]
+    };
+
+    // Render danh sách ngoại khu theo Tab
+    function switchLocationCategory(category) {
+      // Cập nhật style tab buttons
+      const buttons = document.querySelectorAll('.loc-tab-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('text-slate-300');
+      });
+
+      const activeBtn = document.getElementById(`tab-loc-${category}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-600', 'text-white');
+        activeBtn.classList.remove('text-slate-300');
+      }
+
+      // Render cards
+      const container = document.getElementById('location-cards-container');
+      const items = neighborhoodData[category] || [];
+      
+      container.innerHTML = items.map(item => `
+        <div class="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 hover:border-brand-500 transition-all">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h4 class="text-sm font-bold text-white">${item.name}</h4>
+              <p class="text-xs text-slate-400 mt-1">${item.desc}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="inline-block px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-400 text-xs font-extrabold border border-brand-500/30">
+                ${item.dist}
+              </span>
+              <span class="block text-[11px] text-slate-400 mt-0.5">${item.time}</span>
+            </div>
+          </div>
+          <div class="mt-2.5 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold">
+            <i class="fa-solid fa-sparkles text-[10px]"></i> ${item.tag}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Khởi tạo tab đầu tiên mặc định
+    switchLocationCategory('markets');
+
+    // -------------------------------------------------------------
+    // Khởi Tạo Bản Đồ Leaflet (OpenStreetMap)
+    // -------------------------------------------------------------
+    let map;
+    function initMap() {
+      // Tọa độ ví dụ khu vực sầm uất (Thủ Đức / Làng Đại Học)
+      const boardingHouseCoords = [10.8698, 106.7785];
+
+      map = L.map('leaflet-map', {
+        center: boardingHouseCoords,
+        zoom: 15,
+        scrollWheelZoom: false // Tránh giật khi scroll chuột
+      });
+
+      // Lớp bản đồ nền OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Custom Icon cho Nhà Trọ
+      const houseIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `
+          <div style="background-color: #059669; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 16px;">
+            <i class="fa-solid fa-house"></i>
+          </div>
+        `,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+      });
+
+      // Pin Nhà Trọ
+      L.marker(boardingHouseCoords, { icon: houseIcon })
+        .addTo(map)
+        .bindPopup(`
+          <div style="font-family: sans-serif; font-size: 12px;">
+            <strong style="color: #059669; font-size: 14px;">GREEN HOUSE LIVING</strong><br/>
+            <span>Nhà trọ cao cấp chuẩn xanh</span><br/>
+            <span style="color: #64748b;">Hẻm 6m ô tô đỗ cửa</span>
+          </div>
+        `)
+        .openPopup();
+
+      // Pin Chợ Dân Sinh (cách 150m)
+      L.marker([10.8710, 106.7795]).addTo(map)
+        .bindPopup("<b>Chợ Dân Sinh Linh Trung</b><br/>Cách trọ 150m (2 phút đi bộ)");
+
+      // Pin Bệnh Viện (cách 850m)
+      L.marker([10.8655, 106.7745]).addTo(map)
+        .bindPopup("<b>Bệnh Viện Đa Khoa Khu Vực</b><br/>Cách trọ 850m (3 phút)");
+
+      // Pin Trường ĐH (cách 1.3km)
+      L.marker([10.8780, 106.7820]).addTo(map)
+        .bindPopup("<b>Cụm Trường Đại Học Trọng Điểm</b><br/>Cách trọ 5 phút di chuyển");
+    }
+
+    // Chạy khởi tạo map khi DOM sẵn sàng
+    window.addEventListener('DOMContentLoaded', () => {
+      initMap();
+    });
+
+    // -------------------------------------------------------------
+    // Lọc Phòng Theo Danh Mục (Filter Rooms)
+    // -------------------------------------------------------------
+    function filterRooms(category) {
+      // Style buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('bg-white', 'text-slate-700');
+      });
+
+      const activeBtn = document.getElementById(`filter-${category}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-600', 'text-white');
+        activeBtn.classList.remove('bg-white', 'text-slate-700');
+      }
+
+      // Hide / Show cards
+      const cards = document.querySelectorAll('.room-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Xử Lý Cuộn Trang (Header shadow & Scroll Top Button)
+    // -------------------------------------------------------------
+    const btnScrollTop = document.getElementById('btn-scroll-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        btnScrollTop.classList.remove('opacity-0', 'pointer-events-none');
+        btnScrollTop.classList.add('opacity-100', 'pointer-events-auto');
+      } else {
+        btnScrollTop.classList.add('opacity-0', 'pointer-events-none');
+        btnScrollTop.classList.remove('opacity-100', 'pointer-events-auto');
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Modal Helpers (Login / Register / Booking)
+    // -------------------------------------------------------------
+    function openLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+    }
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+    }
+
+    function openRegisterModal() {
+      document.getElementById('register-modal').classList.remove('hidden');
+    }
+    function closeRegisterModal() {
+      document.getElementById('register-modal').classList.add('hidden');
+    }
+
+    function openBookingModal(roomName) {
+      if (roomName) {
+        const select = document.getElementById('booking-room');
+        for (let i = 0; i < select.options.length; i++) {
+          if (select.options[i].value.includes(roomName) || roomName.includes(select.options[i].value)) {
+            select.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      document.getElementById('dat-lich').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('booking-name').focus();
+    }
+
+    function switchLoginRole(role) {
+      const btnTenant = document.getElementById('tab-role-tenant');
+      const btnManager = document.getElementById('tab-role-manager');
+      if (role === 'tenant') {
+        btnTenant.className = 'py-2 rounded-lg bg-white text-slate-800 shadow-xs';
+        btnManager.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-800';
+      } else {
+        btnManager.className = 'py-2 rounded-lg bg-white text-slate-800 shadow-xs';
+        btnTenant.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-800';
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Toast Notification System
+    // -------------------------------------------------------------
+    function showToast(title, message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-msg').innerText = message;
+      
+      const iconContainer = document.getElementById('toast-icon');
+      if (isSuccess) {
+        iconContainer.className = 'w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0';
+        iconContainer.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else {
+        iconContainer.className = 'w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0';
+        iconContainer.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      }
+
+      toast.classList.remove('translate-x-full');
+      setTimeout(() => {
+        toast.classList.add('translate-x-full');
+      }, 4000);
+    }
+
+    // -------------------------------------------------------------
+    // Form Submission Handlers
+    // -------------------------------------------------------------
+    function handleAppointmentSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('booking-name').value;
+      const phone = document.getElementById('booking-phone').value;
+      const room = document.getElementById('booking-room').value;
+      const time = document.getElementById('booking-time').value;
+
+      showToast("Đặt Lịch Thành Công!", `Cảm ơn ${name} (${phone}). Quản lý sẽ gọi xác nhận khung giờ ${time}!`);
+      document.getElementById('appointment-form').reset();
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      closeLoginModal();
+      
+      // Update Header with User Profile
+      const authContainer = document.getElementById('auth-header-container');
+      authContainer.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200">
+            <div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="text-left">
+              <span class="block text-xs font-bold text-emerald-900">${username}</span>
+              <span class="block text-[10px] text-emerald-700 font-semibold">Khách thuê phòng 204</span>
+            </div>
+          </div>
+          <button onclick="location.reload()" title="Đăng xuất" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      `;
+
+      showToast("Đăng Nhập Thành Công!", `Chào mừng bạn quay trở lại GreenHouse Living!`);
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      closeRegisterModal();
+      showToast("Đăng Ký Thành Công!", `Hồ sơ ${name} đã được tạo thành công trên hệ thống.`);
+    }
+  </script>
+
+</body>
+</html>
