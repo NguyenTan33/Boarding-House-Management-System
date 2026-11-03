@@ -9,7 +9,7 @@ namespace Domain.Entities
         public int RoomId { get; private set; }
 
         // Khóa ngoại liên kết tới House
-        public int HouseId { get; private set; };
+        public int HouseId { get; private set; }
         public House? House { get; private set; }
 
         // Thông tin phòng
