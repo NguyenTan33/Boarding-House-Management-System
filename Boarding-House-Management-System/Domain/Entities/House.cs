@@ -7,8 +7,9 @@ namespace Domain.Entities
         // Khóa chính (Primary Key - tự tăng trong Database)
         public int HouseId { get; private set; }
 
-        // Người quản lý / Chủ nhà (liên kết với Account/IdentityUser nếu có)
+        // Người quản lý / Chủ nhà (liên kết với Account/IdentityUser)
         public string? OwnerId { get; private set; }
+        public Account? Owner { get; private set; }
 
         // Thông tin cơ bản
         public string HouseName { get; private set; } = string.Empty;

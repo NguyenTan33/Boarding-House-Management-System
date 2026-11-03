@@ -12,6 +12,9 @@ namespace Domain.Entities
         public int HouseId { get; private set; }
         public House? House { get; private set; }
 
+        // Danh sách hợp đồng thuê phòng qua các thời kỳ
+        public ICollection<Contract> Contracts { get; private set; } = new List<Contract>();
+
         // Thông tin phòng
         public string RoomNumber { get; private set; } = string.Empty; // Số/tên phòng: "101", "201", "P.102"...
         public decimal Price { get; private set; }                    // Tiền tệ dùng decimal
