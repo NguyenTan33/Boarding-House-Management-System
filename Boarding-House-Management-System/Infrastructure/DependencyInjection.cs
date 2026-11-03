@@ -72,6 +72,7 @@ namespace Infrastructure
 
             // 5. Đăng ký Repository Pattern
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IRoomRepository, RoomRepository>();
 
             return services;
         }
