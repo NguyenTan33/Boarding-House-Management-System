@@ -52,6 +52,9 @@ namespace Domain.Entities
         // Danh sách các kỳ chốt chỉ số điện nước trong thời gian hợp đồng
         public ICollection<MeterReading> MeterReadings { get; private set; } = new List<MeterReading>();
 
+        // Danh sách các hóa đơn tiền phòng hàng tháng của hợp đồng này
+        public ICollection<Invoice> Invoices { get; private set; } = new List<Invoice>();
+
         // Constructor cho EF Core
         private Contract() { }
 
