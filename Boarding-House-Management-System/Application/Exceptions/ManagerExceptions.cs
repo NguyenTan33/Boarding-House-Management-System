@@ -1,38 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Application.Exceptions
 {
-    public class NotFoundException : Exception
+    public class NotFoundException : Domain.Exceptions.NotFoundException
     {
-        public NotFoundException(string message) : base(message){}
+        public NotFoundException(string message) : base(message) { }
     }
 
-
-    public class BadRequestException : Exception
+    public class BadRequestException : Domain.Exceptions.BadRequestException
     {
-        public BadRequestException(string message) : base(message){}
+        public BadRequestException(string message) : base(message) { }
     }
 
-
-    public class ConflictException : Exception
+    public class ConflictException : Domain.Exceptions.ConflictException
     {
-        public ConflictException(string message) : base(message){}
+        public ConflictException(string message) : base(message) { }
     }
 
-
-    public class ValidationException : Exception
+    public class ValidationException : Domain.Exceptions.ValidationException
     {
-        public ValidationException(string message) : base(message){}
+        public ValidationException(string message) : base(message) { }
+        public ValidationException(IDictionary<string, string[]> errors) : base(errors) { }
     }
 
-
-    public class ForbiddenException : Exception
+    public class ForbiddenException : Domain.Exceptions.ForbiddenException
     {
-        public ForbiddenException(string message) : base(message){}
+        public ForbiddenException(string message) : base(message) { }
     }
-
 }

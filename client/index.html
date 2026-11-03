@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenHouse Living - Hệ Thống Nhà Trọ Chuẩn Xanh, Tiện Nghi & An Ninh</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Hệ thống phòng trọ cao cấp, full nội thất, khóa vân tay, giờ giấc tự do 24/7. Vị trí trung tâm gần chợ dân sinh, bệnh viện đa khoa, trường đại học trọng điểm. Liên hệ xem phòng trực tiếp miễn phí!" />
+    <meta name="keywords" content="nhà trọ, thuê phòng trọ, phòng trọ cao cấp, phòng trọ thủ đức, phòng trọ gác lửng, căn hộ mini, phòng trọ an ninh" />
+    <meta name="author" content="GreenHouse Management System" />
+
+    <!-- OpenGraph (Facebook, Zalo, Messenger preview) -->
+    <meta property="og:title" content="GreenHouse Living - Không Gian Sống Tiện Nghi & An Ninh Chuẩn Mực" />
+    <meta property="og:description" content="Phòng mới 100%, ban công thoáng, khóa vân tay, giờ giấc tự do. Gần chợ, bệnh viện, trường đại học. Liên hệ xem phòng ngay!" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80" />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Schema.org JSON-LD Structured Data for Local Real Estate / Lodging SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LodgingBusiness",
+      "name": "Hệ Thống Nhà Trọ GreenHouse Living",
+      "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
+      "telephone": "+84988776655",
+      "email": "support@greenhouse.vn",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Đường Số 8, Phường Linh Trung",
+        "addressLocality": "TP. Thủ Đức",
+        "addressRegion": "TP. Hồ Chí Minh",
+        "addressCountry": "VN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 10.8698,
+        "longitude": 106.7785
+      },
+      "amenityFeature": [
+        { "@type": "LocationFeatureSpecification", "name": "Khóa Vân Tay & FaceID 24/7", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Camera Giám Sát AI", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Bãi Xe & Trạm Sạc Xe Điện", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Wifi 6 Tốc Độ Cao", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "PCCC Đạt Chuẩn Kiểm Định", "value": true }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-emerald-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
