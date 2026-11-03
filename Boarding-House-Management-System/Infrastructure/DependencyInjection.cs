@@ -1,7 +1,9 @@
 using System.Text;
 using Application.Interfaces.Auth;
+using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Infrastructure.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -67,6 +69,9 @@ namespace Infrastructure
             services.AddScoped<IHashService, HashService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+            // 5. Đăng ký Repository Pattern
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             return services;
         }
