@@ -1,9 +1,11 @@
 using System.Text;
 using Application.Interfaces.Auth;
 using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using Domain.Entities;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Infrastructure.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -64,11 +66,12 @@ namespace Infrastructure
                 };
             });
 
-            // 4. Đăng ký các dịch vụ xác thực (Auth Services)
+            // 4. Đăng ký các dịch vụ xác thực (Auth Services) & Quản lý người dùng
             services.AddScoped<IPhoneService, PhoneService>();
             services.AddScoped<IHashService, HashService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IUserService, UserService>();
 
             // 5. Đăng ký Repository Pattern
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
