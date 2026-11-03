@@ -424,5 +424,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# Official VS Code C# Dev Kit Extension exclusion
-#*.lscache
+
+Boarding-House-Management-System/API/appsettings.json
+*.json

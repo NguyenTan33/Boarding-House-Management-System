@@ -83,6 +83,7 @@ namespace Domain.Entities
             int numberOfRenters = 1,
             int numberOfVehicles = 0,
             int paymentCycleMonths = 1,
+            string? contractImageUrl = null,
             string? note = null)
         {
             Validate(contractNumber, roomId, accountId, startDate, endDate, rentalPrice, depositAmount);
@@ -104,8 +105,18 @@ namespace Domain.Entities
             NumberOfRenters = numberOfRenters < 1 ? 1 : numberOfRenters;
             NumberOfVehicles = numberOfVehicles < 0 ? 0 : numberOfVehicles;
             PaymentCycleMonths = paymentCycleMonths < 1 ? 1 : paymentCycleMonths;
+            ContractImageUrl = contractImageUrl?.Trim();
             Note = note?.Trim();
             Status = ContractStatus.Draft;
+        }
+
+        // Đính kèm hoặc cập nhật hình ảnh / file scan hợp đồng giấy đã ký
+        public void AttachContractImage(string contractImageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(contractImageUrl))
+                throw new ValidationException("Đường dẫn hình ảnh hợp đồng không được để trống.");
+
+            ContractImageUrl = contractImageUrl.Trim();
         }
 
         // Kích hoạt hợp đồng khi khách chính thức nhận phòng và dọn vào
