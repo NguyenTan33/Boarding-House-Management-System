@@ -75,6 +75,7 @@ namespace Infrastructure
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<ITenantRepository, TenantRepository>();
+            services.AddScoped<IMeterReadingRepository, MeterReadingRepository>();
 
             return services;
         }
