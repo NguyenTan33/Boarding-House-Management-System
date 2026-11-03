@@ -49,6 +49,9 @@ namespace Domain.Entities
         public ContractStatus Status { get; private set; } = ContractStatus.Draft;
         public string? Note { get; private set; }                          // Ghi chú / điều khoản riêng
 
+        // Hình ảnh / Bản scan hợp đồng giấy đã ký (ảnh chụp hoặc file PDF)
+        public string? ContractImageUrl { get; private set; }
+
         // Danh sách các kỳ chốt chỉ số điện nước trong thời gian hợp đồng
         public ICollection<MeterReading> MeterReadings { get; private set; } = new List<MeterReading>();
 
