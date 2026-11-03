@@ -27,6 +27,9 @@ namespace Domain.Entities
         // Lịch sử toàn bộ các giao dịch thanh toán của tài khoản này
         public ICollection<Payment> Payments { get; private set; } = new List<Payment>();
 
+        // Danh sách các Refresh Token của tài khoản
+        public ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
+
         // Quan hệ 1 - N: Nếu tài khoản là chủ trọ, có thể sở hữu nhiều dãy trọ
         public ICollection<House> Houses { get; private set; } = new List<House>();
 

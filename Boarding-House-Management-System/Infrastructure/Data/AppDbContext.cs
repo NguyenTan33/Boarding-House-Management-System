@@ -17,6 +17,7 @@ namespace Infrastructure.Data
         public DbSet<MeterReading> MeterReadings => Set<MeterReading>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -287,6 +288,26 @@ namespace Infrastructure.Data
                     .WithMany(a => a.Payments)
                     .HasForeignKey(p => p.AccountId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ==========================================
+            // 8. CẤU HÌNH THỰC THỂ REFRESH TOKEN (JWT)
+            // ==========================================
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(r => r.RefreshTokenId);
+
+                entity.Property(r => r.TokenHash)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.HasIndex(r => r.TokenHash)
+                    .IsUnique();
+
+                entity.HasOne(r => r.Account)
+                    .WithMany(a => a.RefreshTokens)
+                    .HasForeignKey(r => r.AccountId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

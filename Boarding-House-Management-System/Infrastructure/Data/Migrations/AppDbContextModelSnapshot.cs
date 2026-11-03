@@ -560,6 +560,45 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("RefreshTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RefreshTokenId"));
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("RefreshTokenId");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Domain.Entities.Room", b =>
                 {
                     b.Property<int>("RoomId")
@@ -845,6 +884,17 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Invoice");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Domain.Entities.Account", "Account")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("Domain.Entities.Room", b =>
                 {
                     b.HasOne("Domain.Entities.House", "House")
@@ -916,6 +966,8 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("Invoices");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Domain.Entities.Contract", b =>

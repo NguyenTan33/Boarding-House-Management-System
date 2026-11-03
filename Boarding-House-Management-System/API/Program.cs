@@ -1,15 +1,22 @@
+using API.Middlewares;
 using Infrastructure;
+using Infrastructure.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Đăng ký tầng Infrastructure (DbContext, SQL Server)
+// 1. Đăng ký tầng Infrastructure (DbContext, SQL Server, Identity, JWT, Auth Services)
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// 2. Tự động Seed Roles (Admin, Landlord, Tenant) và tài khoản Admin mặc định
+await IdentityDbSeeder.SeedRolesAndAdminAsync(app.Services);
+
+// 3. Middleware xử lý ngoại lệ tập trung (trả về JSON đẹp, mã lỗi chuẩn)
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -19,6 +26,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// 4. Bật Authentication & Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
