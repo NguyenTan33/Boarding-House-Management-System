@@ -49,6 +49,9 @@ namespace Domain.Entities
         public ContractStatus Status { get; private set; } = ContractStatus.Draft;
         public string? Note { get; private set; }                          // Ghi chú / điều khoản riêng
 
+        // Danh sách các kỳ chốt chỉ số điện nước trong thời gian hợp đồng
+        public ICollection<MeterReading> MeterReadings { get; private set; } = new List<MeterReading>();
+
         // Constructor cho EF Core
         private Contract() { }
 
